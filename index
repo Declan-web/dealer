@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Casino Dealer Admin - Red Edition Final</title>
+    <style>
+        :root {
+            --main-red: #AD2A1B;
+            --dark-bg: #0f0f0f;
+            --panel-bg: #1a1a1a;
+            --card-white: #ffffff;
+            --accent-green: #2ecc71;
+            --text-main: #eeeeee;
+            --gold: #f1c40f;
+            --silver: #bdc3c7;
+            --joker-red-neon: #ff3333; 
+        }
+
+        body { 
+            font-family: 'Segoe UI', 'Malgun Gothic', sans-serif; 
+            background-color: var(--dark-bg); 
+            color: var(--text-main); 
+            margin: 0; 
+            padding: 20px;
+            line-height: 1.5;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            background: var(--panel-bg); 
+            padding: 30px; 
+            border-radius: 24px; 
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(173, 42, 27, 0.2);
+        }
+
+        h1 { 
+            text-align: center; 
+            color: var(--main-red); 
+            text-transform: uppercase; 
+            letter-spacing: 4px; 
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .game-selector { display: flex; gap: 12px; margin-bottom: 25px; }
+        .btn-game { 
+            flex: 1; padding: 15px; border: 2px solid var(--main-red); background: transparent; color: var(--main-red); 
+            cursor: pointer; font-weight: bold; border-radius: 12px; transition: all 0.3s ease; font-size: 1.1em;
+        }
+        .btn-game.active { background: var(--main-red); color: #fff; box-shadow: 0 0 15px rgba(173, 42, 27, 0.4); }
+
+        .controls { 
+            background: rgba(255,255,255,0.05); padding: 20px; border-radius: 15px; text-align: center; 
+            margin-bottom: 10px; display: flex; justify-content: center; align-items: center; gap: 15px;
+        }
+
+        input[type="number"] { padding: 10px; width: 80px; background: #000; border: 1px solid #444; color: #fff; border-radius: 8px; text-align: center; }
+        .shuffle-btn { padding: 12px 30px; background: var(--main-red); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        .poker-settle-btn { padding: 12px 30px; background: var(--accent-green); color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; display: none; }
+        .clear-btn { padding: 12px 30px; background: #444; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+        .game-board { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .player-slot { background: #222; padding: 20px; border-radius: 18px; border: 1px solid rgba(173, 42, 27, 0.3); }
+        .winner-slot { border: 2px solid var(--main-red); background: #2a1a1a; }
+        
+        .player-header { border-bottom: 1px solid #333; padding-bottom: 12px; margin-bottom: 15px; font-weight: bold; color: var(--main-red); font-size: 1.2em; text-align: center; }
+        .poker-name-input { background: transparent; border: 1px dashed #555; color: var(--main-red); font-weight: bold; text-align: center; width: 80%; }
+
+        .card-display { display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; min-height: 80px; align-items: center; }
+        .card { 
+            width: 50px; height: 75px; background: var(--card-white); border-radius: 6px; color: black; position: relative; font-weight: bold; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 1px solid #ddd;
+        }
+        .card.red { color: #d63031; }
+        
+        .card.joker-color { 
+            background: #1a1a1a; 
+            color: var(--joker-red-neon);
+            border: 2px solid var(--joker-red-neon);
+            box-shadow: 0 0 15px rgba(255, 51, 51, 0.7);
+        }
+        .card.joker-color .card-rank { color: var(--joker-red-neon); }
+
+        .card.joker-bw { 
+            background: #2c3e50; color: var(--silver); border: 2px solid var(--silver);
+            box-shadow: 0 0 10px rgba(189, 195, 199, 0.3);
+        }
+
+        .card-suit { font-size: 22px; position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%); }
+        .card-rank { font-size: 14px; position: absolute; top: 4px; left: 5px; }
+
+        .copy-section { background: #000; padding: 12px; border-radius: 10px; margin: 10px 0; display: flex; align-items: center; border-left: 4px solid var(--main-red); }
+        .result-text { font-family: 'Consolas', monospace; font-size: 0.9em; color: #ccc; white-space: pre-wrap; flex-grow: 1; }
+        .copy-btn { background: var(--main-red); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8em; font-weight: bold; color: white; margin-left: 10px; }
+
+        .teetotum-bet-label { font-size: 0.8em; color: var(--gold); margin-bottom: 5px; display: block; }
+        .teetotum-bet-input { width: 100%; background: #000; border: 1px solid var(--gold); color: var(--gold); padding: 5px; border-radius: 5px; margin-bottom: 10px; box-sizing: border-box; }
+
+        .footer-action { text-align: center; margin-top: 40px; padding: 30px; border-top: 1px solid #333; }
+        .analyze-btn { padding: 18px 60px; background: var(--main-red); color: white; border: none; border-radius: 50px; font-size: 1.4em; font-weight: bold; cursor: pointer; }
+        .winner-display-box { display: none; flex-direction: column; align-items: center; gap: 15px; background: #000; padding: 25px; border-radius: 20px; border: 2px solid var(--main-red); max-width: 700px; margin: 20px auto; }
+        #winnerResultFullText { font-size: 1.2em; font-weight: bold; color: #fff; text-align: center; line-height: 1.7; }
+        
+        .quick-copy-area { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px; padding: 0 10px; }
+        .copy-box { background: #111; border: 1px solid #333; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
+        .copy-box-text { font-size: 0.85em; color: #bbb; margin-bottom: 8px; min-height: 40px; }
+        .copy-box-btn { background: #333; color: #fff; border: none; padding: 6px; border-radius: 5px; cursor: pointer; font-size: 0.75em; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1><span id="displayGameName">GAME</span> DEALER PANEL</h1>
+    <div class="game-selector">
+        <button id="btn-POKER" class="btn-game" onclick="setGame('POKER')">포커 (POKER)</button>
+        <button id="btn-TEETOTUM" class="btn-game" onclick="setGame('TEETOTUM')">티토텀 (TEETOTUM)</button>
+    </div>
+
+    <div class="controls">
+        <span id="playerCountLabel">플레이어 수: </span>
+        <input type="number" id="playerCount" value="4" min="1" onchange="initPlayers()">
+        <button id="mainActionBtn" class="shuffle-btn" onclick="dealCards()">CARD SHUFFLE</button>
+        <button id="pokerSettleBtn" class="poker-settle-btn" onclick="settlePokerCards()">POKER LIVE 정산</button>
+        <button class="clear-btn" onclick="clearTable()">CLEAR TABLE</button>
+    </div>
+
+    <div id="pokerQuickCopy" class="quick-copy-area">
+        <div class="copy-box"><div class="copy-box-text" id="phrase1">지금부터 포커를 시작합니다. 아래로 점(.)을 남겨 순서를 정해 주세요.</div><button class="copy-box-btn" onclick="copyPhrase('phrase1')">멘트 1 복사</button></div>
+        <div class="copy-box"><div class="copy-box-text" id="phrase2">카드 배부를 시작합니다. 모두 대기해 주세요.</div><button class="copy-box-btn" onclick="copyPhrase('phrase2')">멘트 2 복사</button></div>
+        <div class="copy-box"><div class="copy-box-text" id="phrase3">카드 배부가 완료되었습니다. 배팅을 시작합니다.</div><button class="copy-box-btn" onclick="copyPhrase('phrase3')">멘트 3 복사</button></div>
+    </div>
+
+    <div id="gameBoard" class="game-board"></div>
+    
+    <div class="footer-action" id="pokerAction" style="display:none;">
+        <button class="analyze-btn" onclick="determineWinner()">Who is winner?</button>
+        <div class="winner-display-box" id="winnerDisplayBox">
+            <span id="winnerResultFullText"></span>
+            <button class="copy-btn" style="padding: 12px 30px; font-size: 1em; margin-top:10px;" onclick="copyWinner()">결과 복사하기</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentGame = 'POKER';
+    let players = [];
+    let currentDeck = [];
+    let winnerId = null;
+    let pokerRoundIdx = -1;
+    let winnerTextMemory = "";
+    const ANTEE = 50;
+    const POKER_LAYOUT = [1, 2, 1, 1];
+
+    const suits = ['♠', '◆', '♥', '♣'];
+    const rankValues = {'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'10':10,'J':11,'Q':12,'K':13,'A':14};
+    const suitValues = {'♠':4, '◆':3, '♥':2, '♣':1};
+
+    window.onload = () => {
+        currentGame = localStorage.getItem('currentGame') || 'POKER';
+        loadState();
+        updateUI();
+    };
+
+    function setGame(gameName) {
+        saveState();
+        currentGame = gameName;
+        localStorage.setItem('currentGame', gameName);
+        loadState();
+        updateUI();
+    }
+
+    function initPlayers() {
+        const count = document.getElementById('playerCount').value;
+        players = Array.from({length: count}, (_, i) => ({
+            id: i + 1, name: `PLAYER ${i + 1}`,
+            cards: [], pokerRounds: [[],[],[],[]], pokerFolds: [false, false, false, false],
+            pokerBets: [0, 0, 0, 0],
+            teetotumBet: 0, teetotumResult: ""
+        }));
+        currentDeck = []; winnerId = null; pokerRoundIdx = -1; winnerTextMemory = "";
+        saveState(); renderBoard();
+    }
+
+    function clearTable() {
+        players.forEach(p => { p.cards = []; p.pokerRounds = [[],[],[],[]]; p.pokerFolds = [false, false, false, false]; p.pokerBets = [0, 0, 0, 0]; p.teetotumBet = 0; p.teetotumResult = ""; });
+        currentDeck = []; winnerId = null; pokerRoundIdx = -1; winnerTextMemory = "";
+        saveState(); updateUI();
+    }
+
+    function updateUI() {
+        document.getElementById('displayGameName').innerText = currentGame;
+        document.querySelectorAll('.btn-game').forEach(b => b.classList.remove('active'));
+        const activeBtn = document.getElementById(`btn-${currentGame}`);
+        if(activeBtn) activeBtn.classList.add('active');
+        const isPoker = (currentGame === 'POKER');
+        const isTeetotum = (currentGame === 'TEETOTUM');
+        document.getElementById('pokerSettleBtn').style.display = isPoker ? 'inline-block' : 'none';
+        document.getElementById('pokerAction').style.display = isPoker ? 'block' : 'none';
+        document.getElementById('pokerQuickCopy').style.display = isPoker ? 'grid' : 'none';
+        document.getElementById('mainActionBtn').innerText = isTeetotum ? "DRAW CARD" : "CARD SHUFFLE";
+        document.getElementById('playerCount').value = players.length;
+        document.getElementById('winnerDisplayBox').style.display = (isPoker && winnerTextMemory) ? 'flex' : 'none';
+        renderBoard();
+    }
+
+    function copyPhrase(id) {
+        const text = document.getElementById(id).innerText;
+        navigator.clipboard.writeText(text).then(() => alert("복사되었습니다."));
+    }
+
+    function createShuffledDeck(includeJokers = false) {
+        let deck = [];
+        const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
+        suits.forEach(s => ranks.forEach(r => deck.push({ suit: s, rank: r, isRed: (s === '♥' || s === '◆'), type: 'normal' })));
+        if (includeJokers) {
+            deck.push({ suit: 'JK', rank: 'BW', isRed: false, type: 'joker-bw' });
+            deck.push({ suit: 'JK', rank: 'COLOR', isRed: true, type: 'joker-color' });
+        }
+        for (let i = deck.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [deck[i], deck[j]] = [deck[j], deck[i]];
+        }
+        return deck;
+    }
+
+    function dealCards() {
+        winnerId = null; pokerRoundIdx = -1; winnerTextMemory = "";
+        document.getElementById('winnerDisplayBox').style.display = 'none';
+        if (currentGame === 'POKER') {
+            currentDeck = createShuffledDeck(false);
+            players.forEach(p => { p.pokerRounds = [[],[],[],[]]; p.pokerFolds = [false, false, false, false]; p.pokerBets = [0, 0, 0, 0]; });
+            settlePokerCards();
+        } else if (currentGame === 'TEETOTUM') {
+            currentDeck = createShuffledDeck(true);
+            players.forEach(p => {
+                if (currentDeck.length > 0) {
+                    const card = currentDeck.shift();
+                    p.cards = [card];
+                    p.teetotumResult = calculateTeetotum(card, p.teetotumBet);
+                }
+            });
+            saveState(); renderBoard();
+        }
+    }
+
+    /* 티토텀 계산 로직 */
+    function calculateTeetotum(card, bet) {
+        if (!card) return "";
+        const b = parseInt(bet) || 0;
+        let prefix = `𝐃𝐈𝐂𝐄 𝐈𝐒 𝐑𝐎𝐋𝐋𝐈𝐍𝐆⋯⋯ `;
+        if (card.type === 'joker-color') return prefix + `JKCOLOR. ${(b * 7).toLocaleString()} 칩을 추가.`; 
+        if (card.type === 'joker-bw') return prefix + `JKBW. 카드를 다시 뽑습니다. 추가 베팅 여부를 결정해 주세요.`;
+        
+        switch(card.suit) {
+            case '♠': return prefix + `${card.rank} ♠. ${(b * 2).toLocaleString()} 칩 추가.`;
+            case '◆': return prefix + `${card.rank} ◆. ${(b).toLocaleString()} 칩 추가.`;
+            case '♥': return prefix + `${card.rank} ♥. ${(b).toLocaleString()} 칩 차감.`;
+            case '♣': return prefix + `${card.rank} ♣. ${(b * 2).toLocaleString()} 칩 차감.`;
+            default: return "";
+        }
+    }
+
+    function settlePokerCards() {
+        if (currentGame !== 'POKER' || currentDeck.length === 0 || pokerRoundIdx >= 3) return;
+        pokerRoundIdx++;
+        players.forEach(p => {
+            for (let i = 0; i < POKER_LAYOUT[pokerRoundIdx]; i++) {
+                if (currentDeck.length > 0 && !p.pokerFolds[pokerRoundIdx]) p.pokerRounds[pokerRoundIdx].push(currentDeck.shift());
+            }
+        });
+        saveState(); renderBoard();
+    }
+
+    function determineWinner() {
+        let roundMaxBets = [0, 0, 0, 0];
+        for(let r = 0; r < 4; r++) {
+            let max = 0; players.forEach(p => { if(p.pokerBets[r] > max) max = p.pokerBets[r]; });
+            roundMaxBets[r] = max;
+        }
+        let totalPot = 0, playerLosses = [];
+        players.forEach((p, idx) => {
+            let spent = ANTEE;
+            for(let r = 0; r < 4; r++) { if (!p.pokerFolds[r]) spent += roundMaxBets[r]; else break; }
+            totalPot += spent; playerLosses.push({ name: p.name, amount: spent });
+        });
+        let candidates = [];
+        players.forEach((p, idx) => {
+            if (!p.pokerFolds[3]) {
+                let allCards = p.pokerRounds.flat();
+                if(allCards.length > 0) candidates.push({ idx: idx, hand: analyzeHand(allCards), name: p.name, spent: playerLosses[idx].amount });
+            }
+        });
+        if (candidates.length === 0) return alert("최종 생존자가 없습니다.");
+        candidates.sort((a, b) => (b.hand.score - a.hand.score) || (b.hand.highRank - a.hand.highRank) || (b.hand.highSuit - a.hand.highSuit));
+        winnerId = candidates[0].idx;
+        const winnerFinalProfit = totalPot - candidates[0].spent;
+        let lossTexts = playerLosses.filter((_, i) => i !== winnerId).map(l => `${l.name}은 ${l.amount.toLocaleString()} 칩`);
+        winnerTextMemory = `${candidates[0].name} 𝐖𝐈𝐍! ${winnerFinalProfit.toLocaleString()} 칩 추가해 주세요.\n${lossTexts.join(', ')}을 각각 차감해 주세요.`;
+        document.getElementById('winnerResultFullText').innerText = winnerTextMemory;
+        document.getElementById('winnerDisplayBox').style.display = 'flex';
+        saveState(); renderBoard();
+    }
+
+    function saveState() {
+        localStorage.setItem(`state-${currentGame}`, JSON.stringify({ players, currentDeck, winnerId, pokerRoundIdx, winnerTextMemory }));
+    }
+
+    function loadState() {
+        const saved = localStorage.getItem(`state-${currentGame}`);
+        if (saved) {
+            const parse = JSON.parse(saved);
+            players = parse.players; currentDeck = parse.currentDeck; winnerId = parse.winnerId; pokerRoundIdx = parse.pokerRoundIdx; winnerTextMemory = parse.winnerTextMemory || "";
+        } else { initPlayers(); }
+    }
+
+    function copyWinner() { navigator.clipboard.writeText(winnerTextMemory).then(() => alert("복사되었습니다.")); }
+    function toggleRoundFold(pIdx, rIdx) {
+        const state = !players[pIdx].pokerFolds[rIdx];
+        for(let i = rIdx; i < 4; i++) players[pIdx].pokerFolds[i] = state;
+        saveState(); renderBoard();
+    }
+    function updateBet(pIdx, rIdx, val) { players[pIdx].pokerBets[rIdx] = parseInt(val) || 0; saveState(); }
+
+    /* [실시간 반영] 베팅금 수정 시 즉시 문구 업데이트 */
+    function updateTeetotumBet(pIdx, val) { 
+        players[pIdx].teetotumBet = parseInt(val) || 0; 
+        // 이미 카드가 뽑힌 상태라면 결과 문구만 실시간 업데이트
+        if (players[pIdx].cards.length > 0) {
+            players[pIdx].teetotumResult = calculateTeetotum(players[pIdx].cards[0], players[pIdx].teetotumBet);
+            const resultElement = document.getElementById(`tRes${pIdx}`);
+            if (resultElement) resultElement.innerText = players[pIdx].teetotumResult;
+        }
+        saveState(); 
+    }
+
+    function updateName(idx, name) { players[idx].name = name; saveState(); }
+    function copyText(id) { navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => alert("복사 완료!")); }
+    
+    function createCardHTML(c) { 
+        let extraClass = "", rankText = c.rank, suitText = c.suit;
+        if(c.type === 'joker-color') { extraClass = "joker-color"; suitText = "JK"; rankText = "★"; }
+        if(c.type === 'joker-bw') { extraClass = "joker-bw"; suitText = "JK"; rankText = "☆"; }
+        return `<div class="card ${c.isRed?'red':''} ${extraClass}"><div class="card-rank">${rankText}</div><div class="card-suit">${suitText}</div></div>`; 
+    }
+
+    function analyzeHand(cards) {
+        let sMap = {}, rMap = {}, rVals = [];
+        cards.forEach(c => { let v = rankValues[c.rank]; rVals.push(v); rMap[v] = (rMap[v] || 0) + 1; sMap[c.suit] = (sMap[c.suit] || 0) + 1; });
+        rVals.sort((a, b) => b - a);
+        let uniqueRanks = [...new Set(rVals)].sort((a, b) => b - a);
+        let flushSuit = Object.keys(sMap).find(s => sMap[s] >= 5), isFlush = !!flushSuit;
+        let isStraight = false, straightHigh = 0;
+        for (let i = 0; i <= uniqueRanks.length - 5; i++) { if (uniqueRanks[i] - uniqueRanks[i+4] === 4) { isStraight = true; straightHigh = uniqueRanks[i]; break; } }
+        if (!isStraight && [14, 5, 4, 3, 2].every(v => rMap[v])) { isStraight = true; straightHigh = 5; }
+        if (isFlush && isStraight) return { score: 10, highRank: straightHigh, highSuit: suitValues[flushSuit] };
+        let counts = Object.values(rMap).sort((a, b) => b - a);
+        if (counts[0] === 4) return { score: 9, highRank: parseInt(Object.keys(rMap).find(k => rMap[k] === 4)), highSuit: 4 };
+        if (counts[0] === 3 && counts[1] >= 2) return { score: 8, highRank: parseInt(Object.keys(rMap).find(k => rMap[k] === 3)), highSuit: 4 };
+        if (isFlush) return { score: 7, highRank: rVals[0], highSuit: suitValues[flushSuit] };
+        if (isStraight) return { score: 4, highRank: straightHigh, highSuit: 4 };
+        if (counts[0] === 3) return { score: 3, highRank: parseInt(Object.keys(rMap).find(k => rMap[k] === 3)), highSuit: 4 };
+        let pairs = Object.keys(rMap).filter(k => rMap[k] === 2).map(Number).sort((a, b) => b - a);
+        if (pairs.length >= 2) return { score: 2, highRank: pairs[0], highSuit: 4 };
+        if (pairs.length === 1) return { score: 1, highRank: pairs[0], highSuit: 4 };
+        return { score: 0, highRank: rVals[0], highSuit: suitValues[cards.find(c => rankValues[c.rank] === rVals[0]).suit] };
+    }
+
+    function renderBoard() {
+        const board = document.getElementById('gameBoard'); board.innerHTML = '';
+        players.forEach((p, pIdx) => {
+            const slot = document.createElement('div');
+            slot.className = `player-slot ${winnerId === pIdx ? 'winner-slot' : ''}`;
+            let content = `<div class="player-header"><input type="text" class="poker-name-input" value="${p.name}" onchange="updateName(${pIdx}, this.value)"></div>`;
+            if (currentGame === 'POKER') {
+                p.pokerRounds.forEach((cards, rIdx) => {
+                    const isFolded = p.pokerFolds[rIdx];
+                    content += `<div class="round-container ${isFolded ? 'folded' : ''}">
+                        <div class="round-header"><span class="round-label">ROUND ${rIdx+1}</span>
+                            <div class="bet-input-area">RAISE: <input type="number" class="bet-input" value="${p.pokerBets[rIdx]}" onchange="updateBet(${pIdx}, ${rIdx}, this.value)">
+                            <label style="margin-left:10px;">FOLD <input type="checkbox" ${isFolded ? 'checked' : ''} onchange="toggleRoundFold(${pIdx}, ${rIdx})"></label></div>
+                        </div><div class="card-display">${(cards||[]).map(createCardHTML).join('')}</div></div>`;
+                });
+            } else if (currentGame === 'TEETOTUM') {
+                content += `<span class="teetotum-bet-label">BETTING CHIPS</span>
+                           <input type="number" class="teetotum-bet-input" value="${p.teetotumBet}" oninput="updateTeetotumBet(${pIdx}, this.value)">
+                           <div class="card-display">${p.cards.length > 0 ? createCardHTML(p.cards[0]) : '<div style="color:#444">WAITING...</div>'}</div>`;
+                if (p.teetotumResult) content += `<div class="copy-section"><div class="result-text" id="tRes${pIdx}">${p.teetotumResult}</div><button class="copy-btn" onclick="copyText('tRes${pIdx}')">복사</button></div>`;
+            }
+            slot.innerHTML = content; board.appendChild(slot);
+        });
+    }
+</script>
+</body>
+</html>
