@@ -217,7 +217,7 @@
 
     function copyPhrase(id) {
         const text = document.getElementById(id).innerText;
-        navigator.clipboard.writeText(text).then(() => alert("복사되었습니다."));
+        navigator.clipboard.writeText(text); // 알림창 제거
     }
 
     function createShuffledDeck(includeJokers = false) {
@@ -255,19 +255,22 @@
         }
     }
 
-    /* 티토텀 계산 로직 (문양 수정 반영) */
+    /* 티토텀 계산 로직 (이모티콘 변환 방지 적용) */
     function calculateTeetotum(card, bet) {
         if (!card) return "";
         const b = parseInt(bet) || 0;
         let prefix = `𝐃𝐈𝐂𝐄 𝐈𝐒 𝐑𝐎𝐋𝐋𝐈𝐍𝐆⋯⋯ `;
+        // 문양 뒤에 \uFE0E를 붙여 이모티콘화를 강제 방지합니다.
+        const S = "♠\uFE0E"; const D = "◆\uFE0E"; const H = "♥\uFE0E"; const C = "♣\uFE0E";
+
         if (card.type === 'joker-color') return prefix + `JKCOLOR. ${(b * 7).toLocaleString()} 칩을 추가.`; 
         if (card.type === 'joker-bw') return prefix + `JKBW. 카드를 다시 뽑습니다. 추가 베팅 여부를 결정해 주세요.`;
         
         switch(card.suit) {
-            case '♠': return prefix + `${card.rank} ♠︎. ${(b * 2).toLocaleString()} 칩 추가.`;
-            case '◆': return prefix + `${card.rank} ◆︎. ${(b).toLocaleString()} 칩 추가.`;
-            case '♥': return prefix + `${card.rank} ♥︎. ${(b).toLocaleString()} 칩 차감.`;
-            case '♣': return prefix + `${card.rank} ♣︎. ${(b * 2).toLocaleString()} 칩 차감.`;
+            case '♠': return prefix + `${card.rank} ${S}. ${(b * 2).toLocaleString()} 칩 추가.`;
+            case '◆': return prefix + `${card.rank} ${D}. ${(b).toLocaleString()} 칩 추가.`;
+            case '♥': return prefix + `${card.rank} ${H}. ${(b).toLocaleString()} 칩 차감.`;
+            case '♣': return prefix + `${card.rank} ${C}. ${(b * 2).toLocaleString()} 칩 차감.`;
             default: return "";
         }
     }
@@ -325,7 +328,7 @@
         } else { initPlayers(); }
     }
 
-    function copyWinner() { navigator.clipboard.writeText(winnerTextMemory).then(() => alert("복사되었습니다.")); }
+    function copyWinner() { navigator.clipboard.writeText(winnerTextMemory); } // 알림창 제거
     function toggleRoundFold(pIdx, rIdx) {
         const state = !players[pIdx].pokerFolds[rIdx];
         for(let i = rIdx; i < 4; i++) players[pIdx].pokerFolds[i] = state;
@@ -333,7 +336,6 @@
     }
     function updateBet(pIdx, rIdx, val) { players[pIdx].pokerBets[rIdx] = parseInt(val) || 0; saveState(); }
 
-    /* [실시간 반영] 베팅금 수정 시 즉시 문구 업데이트 */
     function updateTeetotumBet(pIdx, val) { 
         players[pIdx].teetotumBet = parseInt(val) || 0; 
         if (players[pIdx].cards.length > 0) {
@@ -345,7 +347,7 @@
     }
 
     function updateName(idx, name) { players[idx].name = name; saveState(); }
-    function copyText(id) { navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => alert("복사 완료!")); }
+    function copyText(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); } // 알림창 제거
     
     function createCardHTML(c) { 
         let extraClass = "", rankText = c.rank, suitText = c.suit;
