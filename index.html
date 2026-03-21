@@ -255,7 +255,7 @@
         }
     }
 
-    /* 티토텀 계산 로직 */
+    /* 티토텀 계산 로직 (문양 수정 반영) */
     function calculateTeetotum(card, bet) {
         if (!card) return "";
         const b = parseInt(bet) || 0;
@@ -264,10 +264,10 @@
         if (card.type === 'joker-bw') return prefix + `JKBW. 카드를 다시 뽑습니다. 추가 베팅 여부를 결정해 주세요.`;
         
         switch(card.suit) {
-            case '♠': return prefix + `${card.rank} ♠. ${(b * 2).toLocaleString()} 칩 추가.`;
-            case '◆': return prefix + `${card.rank} ◆. ${(b).toLocaleString()} 칩 추가.`;
-            case '♥': return prefix + `${card.rank} ♥. ${(b).toLocaleString()} 칩 차감.`;
-            case '♣': return prefix + `${card.rank} ♣. ${(b * 2).toLocaleString()} 칩 차감.`;
+            case '♠': return prefix + `${card.rank} ♠︎. ${(b * 2).toLocaleString()} 칩 추가.`;
+            case '◆': return prefix + `${card.rank} ◆︎. ${(b).toLocaleString()} 칩 추가.`;
+            case '♥': return prefix + `${card.rank} ♥︎. ${(b).toLocaleString()} 칩 차감.`;
+            case '♣': return prefix + `${card.rank} ♣︎. ${(b * 2).toLocaleString()} 칩 차감.`;
             default: return "";
         }
     }
@@ -336,7 +336,6 @@
     /* [실시간 반영] 베팅금 수정 시 즉시 문구 업데이트 */
     function updateTeetotumBet(pIdx, val) { 
         players[pIdx].teetotumBet = parseInt(val) || 0; 
-        // 이미 카드가 뽑힌 상태라면 결과 문구만 실시간 업데이트
         if (players[pIdx].cards.length > 0) {
             players[pIdx].teetotumResult = calculateTeetotum(players[pIdx].cards[0], players[pIdx].teetotumBet);
             const resultElement = document.getElementById(`tRes${pIdx}`);
