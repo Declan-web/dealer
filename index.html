@@ -310,7 +310,7 @@
         winnerId = candidates[0].idx;
         const winnerFinalProfit = totalPot - candidates[0].spent;
         let lossTexts = playerLosses.filter((_, i) => i !== winnerId).map(l => `${l.name}은 ${l.amount.toLocaleString()} 칩`);
-        winnerTextMemory = `${candidates[0].name} 𝐖𝐈𝐍! ${winnerFinalProfit.toLocaleString()} 칩 추가해 주세요.\n${lossTexts.join(', ')}을 각각 차감해 주세요.`;
+        winnerTextMemory = `${candidates[0].name} 𝐖𝐈𝐍! ${winnerFinalProfit.toLocaleString()} 칩 추가.\n${lossTexts.join(', ')} 각각 차감.`;
         document.getElementById('winnerResultFullText').innerText = winnerTextMemory;
         document.getElementById('winnerDisplayBox').style.display = 'flex';
         saveState(); renderBoard();
