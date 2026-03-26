@@ -78,31 +78,20 @@
         .player-header { border-bottom: 1px solid #333; padding-bottom: 12px; margin-bottom: 15px; font-weight: bold; color: var(--main-red); font-size: 1.2em; text-align: center; }
         .poker-name-input { background: transparent; border: 1px dashed #555; color: var(--main-red); font-weight: bold; text-align: center; width: 80%; }
 
-        .card-display { display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; min-height: 80px; align-items: center; }
+        .card-display { display: flex; gap: 8px; justify-content: center; margin-bottom: 10px; min-height: 80px; align-items: center; }
         .card { 
             width: 50px; height: 75px; background: var(--card-white); border-radius: 6px; color: black; position: relative; font-weight: bold; 
             box-shadow: 0 4px 8px rgba(0,0,0,0.3); border: 1px solid #ddd;
         }
         .card.red { color: #d63031; }
         
-        .card.joker-color { 
-            background: #1a1a1a; 
-            color: var(--joker-red-neon);
-            border: 2px solid var(--joker-red-neon);
-            box-shadow: 0 0 15px rgba(255, 51, 51, 0.7);
-        }
-        .card.joker-color .card-rank { color: var(--joker-red-neon); }
-
-        .card.joker-bw { 
-            background: #2c3e50; color: var(--silver); border: 2px solid var(--silver);
-            box-shadow: 0 0 10px rgba(189, 195, 199, 0.3);
-        }
-
+        .card.joker-color { background: #1a1a1a; color: var(--joker-red-neon); border: 2px solid var(--joker-red-neon); box-shadow: 0 0 15px rgba(255, 51, 51, 0.7); }
+        .card.joker-bw { background: #2c3e50; color: var(--silver); border: 2px solid var(--silver); box-shadow: 0 0 10px rgba(189, 195, 199, 0.3); }
         .card-suit { font-size: 22px; position: absolute; top: 52%; left: 50%; transform: translate(-50%, -50%); }
         .card-rank { font-size: 14px; position: absolute; top: 4px; left: 5px; }
 
-        .copy-section { background: #000; padding: 12px; border-radius: 10px; margin: 10px 0; display: flex; align-items: center; border-left: 4px solid var(--main-red); }
-        .result-text { font-family: 'Consolas', monospace; font-size: 0.9em; color: #ccc; white-space: pre-wrap; flex-grow: 1; }
+        .copy-section { background: #000; padding: 8px 12px; border-radius: 10px; margin: 5px 0; display: flex; align-items: center; border-left: 4px solid var(--main-red); }
+        .result-text { font-family: 'Consolas', monospace; font-size: 0.85em; color: #ccc; white-space: pre-wrap; flex-grow: 1; }
         .copy-btn { background: var(--main-red); border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8em; font-weight: bold; color: white; margin-left: 10px; }
 
         .teetotum-bet-label { font-size: 0.8em; color: var(--gold); margin-bottom: 5px; display: block; }
@@ -113,10 +102,14 @@
         .winner-display-box { display: none; flex-direction: column; align-items: center; gap: 15px; background: #000; padding: 25px; border-radius: 20px; border: 2px solid var(--main-red); max-width: 700px; margin: 20px auto; }
         #winnerResultFullText { font-size: 1.2em; font-weight: bold; color: #fff; text-align: center; line-height: 1.7; }
         
-        .quick-copy-area { display: none; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 30px; padding: 0 10px; }
+        .quick-copy-area { display: none; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px; padding: 0 10px; }
         .copy-box { background: #111; border: 1px solid #333; border-radius: 10px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; }
-        .copy-box-text { font-size: 0.85em; color: #bbb; margin-bottom: 8px; min-height: 40px; }
+        .copy-box-text { font-size: 0.8em; color: #bbb; margin-bottom: 8px; min-height: 40px; }
         .copy-box-btn { background: #333; color: #fff; border: none; padding: 6px; border-radius: 5px; cursor: pointer; font-size: 0.75em; font-weight: bold; }
+        
+        .round-container { margin-bottom: 15px; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 12px; }
+        .bet-input-area { font-size: 0.8em; margin-top: 5px; }
+        .bet-input { width: 60px !important; font-size: 0.9em; padding: 4px !important; }
     </style>
 </head>
 <body>
@@ -140,6 +133,7 @@
         <div class="copy-box"><div class="copy-box-text" id="phrase1">지금부터 포커를 시작합니다. 아래로 점(.)을 남겨 순서를 정해 주세요.</div><button class="copy-box-btn" onclick="copyPhrase('phrase1')">멘트 1 복사</button></div>
         <div class="copy-box"><div class="copy-box-text" id="phrase2">카드 배부를 시작합니다. 모두 대기해 주세요.</div><button class="copy-box-btn" onclick="copyPhrase('phrase2')">멘트 2 복사</button></div>
         <div class="copy-box"><div class="copy-box-text" id="phrase3">카드 배부가 완료되었습니다. 배팅을 시작합니다.</div><button class="copy-box-btn" onclick="copyPhrase('phrase3')">멘트 3 복사</button></div>
+        <div class="copy-box"><div class="copy-box-text" id="phrase4">♣\uFE0E••┈✦𝙋𝙊𝘾𝙆𝙀𝙍✦┈••♠\uFE0E</div><button class="copy-box-btn" onclick="copyPhrase('phrase4')">디자인 문구 복사</button></div>
     </div>
 
     <div id="gameBoard" class="game-board"></div>
@@ -217,7 +211,7 @@
 
     function copyPhrase(id) {
         const text = document.getElementById(id).innerText;
-        navigator.clipboard.writeText(text); // 알림창 제거
+        navigator.clipboard.writeText(text);
     }
 
     function createShuffledDeck(includeJokers = false) {
@@ -255,17 +249,13 @@
         }
     }
 
-    /* 티토텀 계산 로직 (이모티콘 변환 방지 적용) */
     function calculateTeetotum(card, bet) {
         if (!card) return "";
         const b = parseInt(bet) || 0;
         let prefix = `𝐃𝐈𝐂𝐄 𝐈𝐒 𝐑𝐎𝐋𝐋𝐈𝐍𝐆⋯⋯ `;
-        // 문양 뒤에 \uFE0E를 붙여 이모티콘화를 강제 방지합니다.
         const S = "♠\uFE0E"; const D = "◆\uFE0E"; const H = "♥\uFE0E"; const C = "♣\uFE0E";
-
         if (card.type === 'joker-color') return prefix + `JKCOLOR. ${(b * 7).toLocaleString()} 칩을 추가.`; 
         if (card.type === 'joker-bw') return prefix + `JKBW. 카드를 다시 뽑습니다. 추가 베팅 여부를 결정해 주세요.`;
-        
         switch(card.suit) {
             case '♠': return prefix + `${card.rank} ${S}. ${(b * 2).toLocaleString()} 칩 추가.`;
             case '◆': return prefix + `${card.rank} ${D}. ${(b).toLocaleString()} 칩 추가.`;
@@ -279,8 +269,10 @@
         if (currentGame !== 'POKER' || currentDeck.length === 0 || pokerRoundIdx >= 3) return;
         pokerRoundIdx++;
         players.forEach(p => {
-            for (let i = 0; i < POKER_LAYOUT[pokerRoundIdx]; i++) {
-                if (currentDeck.length > 0 && !p.pokerFolds[pokerRoundIdx]) p.pokerRounds[pokerRoundIdx].push(currentDeck.shift());
+            if (!p.pokerFolds[pokerRoundIdx]) {
+                for (let i = 0; i < POKER_LAYOUT[pokerRoundIdx]; i++) {
+                    if (currentDeck.length > 0) p.pokerRounds[pokerRoundIdx].push(currentDeck.shift());
+                }
             }
         });
         saveState(); renderBoard();
@@ -292,25 +284,36 @@
             let max = 0; players.forEach(p => { if(p.pokerBets[r] > max) max = p.pokerBets[r]; });
             roundMaxBets[r] = max;
         }
-        let totalPot = 0, playerLosses = [];
-        players.forEach((p, idx) => {
-            let spent = ANTEE;
-            for(let r = 0; r < 4; r++) { if (!p.pokerFolds[r]) spent += roundMaxBets[r]; else break; }
-            totalPot += spent; playerLosses.push({ name: p.name, amount: spent });
+        let totalPot = 0;
+        let playerStats = players.map(p => {
+            let spent = ANTEE; // 기본 베팅 50 포함
+            for(let r = 0; r < 4; r++) { 
+                if (!p.pokerFolds[r]) spent += roundMaxBets[r]; 
+                else break; 
+            }
+            totalPot += spent;
+            return { name: p.name, spent: spent, folded: p.pokerFolds[3] };
         });
+
         let candidates = [];
         players.forEach((p, idx) => {
             if (!p.pokerFolds[3]) {
                 let allCards = p.pokerRounds.flat();
-                if(allCards.length > 0) candidates.push({ idx: idx, hand: analyzeHand(allCards), name: p.name, spent: playerLosses[idx].amount });
+                if(allCards.length > 0) candidates.push({ idx: idx, hand: analyzeHand(allCards), name: p.name, spent: playerStats[idx].spent });
             }
         });
+
         if (candidates.length === 0) return alert("최종 생존자가 없습니다.");
         candidates.sort((a, b) => (b.hand.score - a.hand.score) || (b.hand.highRank - a.hand.highRank) || (b.hand.highSuit - a.hand.highSuit));
+        
         winnerId = candidates[0].idx;
-        const winnerFinalProfit = totalPot - candidates[0].spent;
-        let lossTexts = playerLosses.filter((_, i) => i !== winnerId).map(l => `${l.name}은 ${l.amount.toLocaleString()} 칩`);
-        winnerTextMemory = `${candidates[0].name} 𝐖𝐈𝐍! ${winnerFinalProfit.toLocaleString()} 칩 추가.\n${lossTexts.join(', ')} 각각 차감.`;
+        const winnerProfit = totalPot - candidates[0].spent; // 승자의 순이익 (전체판돈 - 본인베팅금)
+        
+        let lossTexts = playerStats
+            .filter((_, i) => i !== winnerId)
+            .map(l => `${l.name} ${l.spent.toLocaleString()} 칩`);
+
+        winnerTextMemory = `${candidates[0].name} 𝐖𝐈𝐍! ${winnerProfit.toLocaleString()} 칩 추가해 주세요.\n${lossTexts.join(', ')} 각각 차감해 주세요.`;
         document.getElementById('winnerResultFullText').innerText = winnerTextMemory;
         document.getElementById('winnerDisplayBox').style.display = 'flex';
         saveState(); renderBoard();
@@ -328,7 +331,7 @@
         } else { initPlayers(); }
     }
 
-    function copyWinner() { navigator.clipboard.writeText(winnerTextMemory); } // 알림창 제거
+    function copyWinner() { navigator.clipboard.writeText(winnerTextMemory); }
     function toggleRoundFold(pIdx, rIdx) {
         const state = !players[pIdx].pokerFolds[rIdx];
         for(let i = rIdx; i < 4; i++) players[pIdx].pokerFolds[i] = state;
@@ -347,7 +350,7 @@
     }
 
     function updateName(idx, name) { players[idx].name = name; saveState(); }
-    function copyText(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); } // 알림창 제거
+    function copyText(id) { navigator.clipboard.writeText(document.getElementById(id).innerText); }
     
     function createCardHTML(c) { 
         let extraClass = "", rankText = c.rank, suitText = c.suit;
@@ -387,11 +390,17 @@
             if (currentGame === 'POKER') {
                 p.pokerRounds.forEach((cards, rIdx) => {
                     const isFolded = p.pokerFolds[rIdx];
+                    const roundCardsText = cards.map(c => `${c.rank} ${c.suit}\uFE0E`).join(' ');
+                    const roundMsg = `𝐑𝐎𝐔𝐍𝐃 ${rIdx+1} 𝐂𝐀𝐑𝐃 𝐎𝐏𝐄𝐍⋯⋯ ${roundCardsText}`;
                     content += `<div class="round-container ${isFolded ? 'folded' : ''}">
-                        <div class="round-header"><span class="round-label">ROUND ${rIdx+1}</span>
+                        <div class="round-header" style="display:flex; justify-content:space-between; align-items:center;">
+                            <span class="round-label" style="color:var(--gold); font-weight:bold;">ROUND ${rIdx+1}</span>
                             <div class="bet-input-area">RAISE: <input type="number" class="bet-input" value="${p.pokerBets[rIdx]}" onchange="updateBet(${pIdx}, ${rIdx}, this.value)">
-                            <label style="margin-left:10px;">FOLD <input type="checkbox" ${isFolded ? 'checked' : ''} onchange="toggleRoundFold(${pIdx}, ${rIdx})"></label></div>
-                        </div><div class="card-display">${(cards||[]).map(createCardHTML).join('')}</div></div>`;
+                            <label style="margin-left:8px;">FOLD <input type="checkbox" ${isFolded ? 'checked' : ''} onchange="toggleRoundFold(${pIdx}, ${rIdx})"></label></div>
+                        </div>
+                        <div class="card-display">${(cards||[]).map(createCardHTML).join('')}</div>
+                        ${cards.length > 0 ? `<div class="copy-section"><div class="result-text" id="pRes${pIdx}_${rIdx}">${roundMsg}</div><button class="copy-btn" onclick="copyText('pRes${pIdx}_${rIdx}')">라운드 복사</button></div>` : ''}
+                    </div>`;
                 });
             } else if (currentGame === 'TEETOTUM') {
                 content += `<span class="teetotum-bet-label">BETTING CHIPS</span>
